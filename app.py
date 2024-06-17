@@ -25,8 +25,4 @@ def get_articles():
 
 @app.route('/api/articles', methods=['GET'])
 def articles():
-    articles = get_articles()
-    return jsonify(articles)
-
-if __name__ == '__main__':
-    app.run(debug=True)
+    articles = 
