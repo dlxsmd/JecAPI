@@ -1,3 +1,4 @@
+# app.py
 from flask import Flask, jsonify
 import requests
 from bs4 import BeautifulSoup
@@ -25,7 +26,7 @@ def get_articles():
 
 @app.route('/api/articles', methods=['GET'])
 def articles():
-    articles=get_articles()
+    articles = get_articles()
     return jsonify(articles)
 
 if __name__ == '__main__':
