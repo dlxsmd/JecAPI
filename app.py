@@ -30,4 +30,4 @@ def articles():
     return jsonify(articles)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=false, port=8000)
