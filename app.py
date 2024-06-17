@@ -1,4 +1,3 @@
-# app.py
 from flask import Flask, jsonify
 import requests
 from bs4 import BeautifulSoup
@@ -13,15 +12,23 @@ def get_articles():
     soup = BeautifulSoup(response.content, 'html.parser')
 
     articles = []
-    for a in soup.find_all('a', href=True):
-        title = html.unescape(a.text.strip())  # タイトルの文字列をデコード
-        link = a['href']
-        if re.match(r'https://www\.jec\.ac\.jp/urgent-news/\d+', link):  # 指定された形式のリンクのみを抽出
-            articles.append({
-                'title': title,
-                'link': link
-            })
-    
+    article_elements = soup.find_all('dl', class_='urgentNewsWrap')  # 記事のリストを含む要素を取得
+
+    for element in article_elements:
+        date_element = element.find('dt', class_='urgentNews__date')
+        date = date_element.text.strip() if date_element else 'No Date'
+        
+        a = element.find('a', href=True)
+        if a:
+            title = html.unescape(a.text.strip())  # タイトルの文字列をデコード
+            link = a['href']
+            if re.match(r'https://www\.jec\.ac\.jp/urgent-news/\d+', link):  # 指定された形式のリンクのみを抽出
+                articles.append({
+                    'title': title,
+                    'link': link,
+                    'date': date
+                })
+
     return articles
 
 @app.route('/api/articles', methods=['GET'])
@@ -30,4 +37,4 @@ def articles():
     return jsonify(articles)
 
 if __name__ == '__main__':
-    app.run(debug=False, port=8000)
+    app.run(debug=True)
