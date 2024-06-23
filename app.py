@@ -87,20 +87,7 @@ def important():
 @app.route('/api/news', methods=['GET'])
 def news():
     page = request.args.get('page', default=1, type=int)
-    current_time = time.time()
-    cache_key = "news_page_{page}"
-
-    # キャッシュが有効か確認
-    if cache_key in cache["news"] and cache["news"][cache_key]["data"] and (current_time - cache["news"][cache_key]["timestamp"] < CACHE_TIMEOUT):
-        return jsonify(cache["news"][cache_key]["data"])
-
-    # キャッシュが無効な場合、データを取得
     news_data = get_news(page)
-    cache["news"][cache_key] = {
-        "data": news_data,
-        "timestamp": current_time
-    }
-
     return jsonify(news_data)
 
 if __name__ == '__main__':
