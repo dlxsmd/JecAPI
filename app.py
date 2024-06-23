@@ -3,8 +3,16 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import html
+import time
 
 app = Flask(__name__)
+
+# キャッシュ変数を初期化
+cache = {
+    "data": None,
+    "timestamp": None
+}
+CACHE_TIMEOUT = 300  # キャッシュの有効期間（秒）
 
 def get_articles():
     url = "https://www.jec.ac.jp/urgent-news/"
@@ -33,7 +41,16 @@ def get_articles():
 
 @app.route('/api/articles', methods=['GET'])
 def articles():
+    current_time = time.time()
+    # キャッシュが有効か確認
+    if cache["data"] and cache["timestamp"] and (current_time - cache["timestamp"] < CACHE_TIMEOUT):
+        return jsonify(cache["data"])
+
+    # キャッシュが無効な場合、データを取得
     articles = get_articles()
+    cache["data"] = articles
+    cache["timestamp"] = current_time
+
     return jsonify(articles)
 
 if __name__ == '__main__':
