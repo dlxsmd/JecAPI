@@ -1,21 +1,10 @@
 from flask import Flask, jsonify, request
 import requests
 from bs4 import BeautifulSoup
-import re
 import html
-import time
+import re
 
 app = Flask(__name__)
-
-# キャッシュ変数を初期化
-cache = {
-    "important": {
-        "data": None,
-        "timestamp": None
-    },
-    "news": {}
-}
-CACHE_TIMEOUT = 300  # キャッシュの有効期間（秒）
 
 def get_important():
     url = "https://www.jec.ac.jp/urgent-news/"
@@ -72,35 +61,13 @@ def get_news(page):
 
 @app.route('/api/important', methods=['GET'])
 def important():
-    current_time = time.time()
-    # キャッシュが有効か確認
-    if cache["important"]["data"] and cache["important"]["timestamp"] and (current_time - cache["important"]["timestamp"] < CACHE_TIMEOUT):
-        return jsonify(cache["important"]["data"])
-
-    # キャッシュが無効な場合、データを取得
     important = get_important()
-    cache["important"]["data"] = important
-    cache["important"]["timestamp"] = current_time
-
     return jsonify(important)
 
 @app.route('/api/news', methods=['GET'])
 def news():
     page = request.args.get('page', default=1, type=int)
-    current_time = time.time()
-    cache_key = "news_page_{page}"
-
-    # キャッシュが有効か確認
-    if cache_key in cache["news"] and cache["news"][cache_key]["data"] and (current_time - cache["news"][cache_key]["timestamp"] < CACHE_TIMEOUT):
-        return jsonify(cache["news"][cache_key]["data"])
-
-    # キャッシュが無効な場合、データを取得
     news_data = get_news(page)
-    cache["news"][cache_key] = {
-        "data": news_data,
-        "timestamp": current_time
-    }
-
     return jsonify(news_data)
 
 if __name__ == '__main__':
