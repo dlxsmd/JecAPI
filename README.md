@@ -51,7 +51,7 @@
 
 ### 1.このリポジトリをクローン
 ```sh
-git clone https://github.com/yourusername/JecNavi-API.git
+git clone https://github.com/dlxsmd/JecAPI.git
 ```
 ### 2.必要なパッケージをインストール
 ```sh
